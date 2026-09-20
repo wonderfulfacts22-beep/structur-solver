@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tanti Hit | Analysis Results & Post-Processing</title>
+  <link rel="icon" type="image/jpeg" href="tanti-hit-logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/index-DJARRses.css">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #F6F4F1;
+      color: #191c19;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .collapsed {
+      visibility: hidden;
+      border-right-width: 0 !important;
+      width: 0 !important;
+      min-width: 0 !important;
+      max-width: 0 !important;
+      overflow: hidden !important;
+    }
+    #diagram-modal {
+      transition: opacity 0.2s ease-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#F6F4F1]">
+  <!-- TOP NAVBAR -->
+  <header class="h-14 bg-[#F6F4F1] border-b border-[#E4DED2] px-4 flex items-center justify-between z-30 shrink-0 sticky top-0 shadow-xs">
+    <!-- Brand / Title -->
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="w-8 h-8 rounded-lg bg-[#191c19] text-white flex items-center justify-center font-black text-xs tracking-tighter hover:bg-[#2d302c] transition shadow-xs cursor-pointer" title="Return to 3D Model">
+        TH
+      </a>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold tracking-wider text-sm text-[#191c19]">TANTI HIT</span>
+          <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded-full bg-[#E4DED2]/60 text-[#191c19] border border-[#E4DED2] font-semibold">
+            Post-Processing
+          </span>
+        </div>
+        <p class="text-[10px] text-[#757168] font-mono leading-none">Structural Analysis Results Suite</p>
+      </div>
+    </div>
+
+    <!-- Center Info -->
+    <div class="flex items-center gap-2.5">
+      <div class="flex items-center gap-1.5 bg-white border border-[#E4DED2] rounded-lg px-3 py-1 shadow-xs">
+        <span class="text-xs text-[#757168] font-medium">Project:</span>
+        <span id="results-project-name" class="text-xs text-[#191c19] font-bold font-mono">Loading...</span>
+      </div>
+      <span id="results-status-badge" class="text-xs font-mono px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold shadow-xs">
+        Ready
+      </span>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-2">
+      <!-- Refresh -->
+      <button id="refresh-results-btn" class="px-3 py-1.5 bg-white hover:bg-[#FAF8F5] text-[#191c19] rounded-lg text-xs font-mono font-bold border border-[#E4DED2] transition shadow-xs flex items-center gap-1.5 cursor-pointer" title="Refresh results from main app">
+        <span>🔄 Refresh</span>
+      </button>
+
+      <!-- Print Report / PDF -->
+      <button id="export-report-btn" class="px-3.5 py-1.5 bg-[#E4DED2] hover:bg-white text-[#191c19] rounded-lg text-xs font-mono font-bold border border-[#d3ccbf] transition shadow-xs flex items-center gap-1.5 cursor-pointer" title="Print calculation report or save as PDF">
+        <svg class="w-3.5 h-3.5 shrink-0 text-[#191c19]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Print PDF</span>
+      </button>
+
+      <!-- Export JSON -->
+      <button id="export-json-btn" class="px-3 py-1.5 bg-white hover:bg-[#FAF8F5] text-[#191c19] rounded-lg text-xs font-mono font-bold border border-[#E4DED2] transition shadow-xs flex items-center gap-1.5 cursor-pointer" title="Export Model & Results to JSON">
+        <svg class="w-3.5 h-3.5 shrink-0 text-[#757168]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+          <polyline points="17 21 17 13 7 13 7 21"></polyline>
+          <polyline points="7 3 7 8 15 8"></polyline>
+        </svg>
+        <span>Export JSON</span>
+      </button>
+
+      <!-- Return / Back to 3D Model -->
+      <button id="back-to-model-btn" class="px-3.5 py-1.5 bg-[#191c19] hover:bg-[#2d302c] text-white rounded-lg text-xs font-mono font-bold border border-[#191c19] transition shadow-xs flex items-center gap-1.5 cursor-pointer" title="Return to 3D Model">
+        <span>← Back to 3D Model</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN RESULTS CONTENT -->
+  <main class="flex-1 overflow-y-auto p-4 md:p-6 max-w-7xl mx-auto w-full">
+    <div id="results-content-container" class="bg-white border border-[#E4DED2] rounded-xl shadow-sm overflow-hidden flex flex-col min-h-[600px]">
+      <!-- Content injected by Gu ResultsManager -->
+    </div>
+  </main>
+
+  <script>
+    const Bu=class{static evaluateAt(e,t,n=1){let r=e.L,i=Math.max(0,Math.min(r,t))/r,a=e.localDisplacements,o=a[0],s=-a[2],c=a[3],l=-a[5],u=i*i,d=u*i,f=1-3*u+2*d,p=r*(i-2*u+d),m=3*u-2*d,h=r*(-u+d),g=f*o+p*s+m*c+h*l,_=(-6*i+6*u)/r,v=1-4*i+3*u,y=(6*i-6*u)/r,b=-2*i+3*u,x=_*o+v*s+y*c+b*l,S=e.localForces,C=S[0],_u=e.udl||0,w=-S[2]-C*t-_u*t*t/2,T=C+_u*t,E=S[1];return{x:t,xi:i,w:g,scaledW:g*n,slope:x,M:w,V:T,T:E}}};
+    const Gu=class{constructor(e,t){this.container=e,this.onViewDiagram=t,this.activeResultsTab=`summary`,this.matrixFormat=`decimal`,this.matrixViewMode=`all`,this.results=null,this.model=null}setResults(e,t){this.results=e,this.model=t,this.render()}switchTab(e){this.activeResultsTab=e,this.render()}render(){if(!this.container)return;if(!this.results||!this.results.success){this.container.innerHTML=`
+        <div class="p-6 text-center text-[#757168] font-mono text-sm bg-[#F6F4F1]">
+          No analysis results available. Click <strong class="text-[#F95C4B] font-semibold">"Run Analysis"</strong> (or Ctrl+Enter) to solve the grillage system.
+        </div>
+      `;return}let{summary:e,equilibrium:t,nodeDisplacements:n,memberForces:r,supportReactions:i,K_global:a}=this.results,o=(e.maxDeflection*1e3).toFixed(3),s=e.maxBendingMoment.toFixed(2),c=e.maxTorsionalMoment.toFixed(2);this.container.innerHTML=`
+      <!-- KPI Metric Cards Header -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 p-3 border-b border-[#E4DED2] bg-[#F6F4F1] font-mono">
+        <!-- Deflection Card -->
+        <div class="bg-white border border-[#E4DED2] rounded-lg p-2.5 shadow-sm">
+          <div class="text-[11px] uppercase tracking-wider text-[#757168] font-sans font-semibold">Max Deflection (δₘₐₓ)</div>
+          <div class="text-lg font-bold text-[#F95C4B] mt-0.5">${o} <span class="text-xs font-normal text-[#757168]">mm</span></div>
+          <div class="text-[10px] text-[#757168] mt-0.5">at Node <strong class="text-[#191c19]">${e.maxDeflectionNodeId||`-`}</strong></div>
+        </div>
+
+        <!-- Bending Moment Card -->
+        <div class="bg-white border border-[#E4DED2] rounded-lg p-2.5 shadow-sm">
+          <div class="text-[11px] uppercase tracking-wider text-[#757168] font-sans font-semibold">Max Bending (Mₘₐₓ)</div>
+          <div class="text-lg font-bold text-[#191c19] mt-0.5">${s} <span class="text-xs font-normal text-[#757168]">kNm</span></div>
+          <div class="text-[10px] text-[#757168] mt-0.5">on Member <strong class="text-[#191c19]">${e.maxBendingMomentMemberId||`-`}</strong></div>
+        </div>
+
+        <!-- Torsion Card -->
+        <div class="bg-white border border-[#E4DED2] rounded-lg p-2.5 shadow-sm">
+          <div class="text-[11px] uppercase tracking-wider text-[#757168] font-sans font-semibold">Max Torsion (Tₘₐₓ)</div>
+          <div class="text-lg font-bold text-[#64748b] mt-0.5">${c} <span class="text-xs font-normal text-[#757168]">kNm</span></div>
+          <div class="text-[10px] text-[#757168] mt-0.5">on Member <strong class="text-[#191c19]">${e.maxTorsionalMomentMemberId||`-`}</strong></div>
+        </div>
+
+        <!-- Equilibrium Card -->
+        <div class="bg-white border border-[#E4DED2] rounded-lg p-2.5 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] uppercase tracking-wider text-[#757168] font-sans font-semibold">Static Equilibrium</span>
+            <span class="px-1.5 py-0.2 rounded text-[10px] ${t.equilibriumPassed?`bg-emerald-500/10 text-emerald-700 border border-emerald-500/30`:`bg-[#F95C4B]/10 text-[#F95C4B] border border-[#F95C4B]/30`} font-bold">
+              ${t.equilibriumPassed?`BALANCED`:`IMBALANCE`}
+            </span>
+          </div>
+          <div class="text-xs font-bold text-[#191c19] mt-1">ΣRz = ${t.sumRz.toFixed(2)} kN</div>
+          <div class="text-[10px] text-[#757168] mt-0.5">ΣFz (Applied) = ${t.totalAppliedFz.toFixed(2)} kN</div>
+        </div>
+      </div>
+
+      <!-- Results Subtabs (Pill Style matching design) -->
+      <div class="flex border-b border-[#E4DED2] bg-[#F6F4F1] px-3 py-1.5 gap-1.5 text-xs font-medium">
+        <button class="res-tab-btn py-1.5 px-3 rounded-md transition cursor-pointer ${this.activeResultsTab===`summary`?`bg-white text-[#191c19] border border-[#E4DED2] shadow-sm font-bold`:`text-[#757168] hover:text-[#191c19] hover:bg-white/60 border border-transparent`}" data-tab="summary">
+          Equilibrium & Details
+        </button>
+        <button class="res-tab-btn py-1.5 px-3 rounded-md transition cursor-pointer ${this.activeResultsTab===`displacements`?`bg-white text-[#191c19] border border-[#E4DED2] shadow-sm font-bold`:`text-[#757168] hover:text-[#191c19] hover:bg-white/60 border border-transparent`}" data-tab="displacements">
+          Nodal Displacements (${Object.keys(n).length})
+        </button>
+        <button class="res-tab-btn py-1.5 px-3 rounded-md transition cursor-pointer ${this.activeResultsTab===`forces`?`bg-white text-[#191c19] border border-[#E4DED2] shadow-sm font-bold`:`text-[#757168] hover:text-[#191c19] hover:bg-white/60 border border-transparent`}" data-tab="forces">
+          Member Forces (${Object.keys(r).length})
+        </button>
+        <button class="res-tab-btn py-1.5 px-3 rounded-md transition cursor-pointer ${this.activeResultsTab===`reactions`?`bg-white text-[#191c19] border border-[#E4DED2] shadow-sm font-bold`:`text-[#757168] hover:text-[#191c19] hover:bg-white/60 border border-transparent`}" data-tab="reactions">
+          Support Reactions (${Object.keys(i).length})
+        </button>
+        <button class="res-tab-btn py-1.5 px-3 rounded-md transition cursor-pointer ${this.activeResultsTab===`matrix`?`bg-white text-[#191c19] border border-[#E4DED2] shadow-sm font-bold`:`text-[#757168] hover:text-[#191c19] hover:bg-white/60 border border-transparent`}" data-tab="matrix">
+          Stiffness Matrix [K]
+        </button>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="p-3 max-h-[460px] overflow-y-auto font-mono text-xs bg-[#F6F4F1]">
+        ${this.renderTabContent()}
+      </div>
+    `,this.container.querySelectorAll(`.res-tab-btn`).forEach(e=>{e.addEventListener(`click`,e=>{let t=e.currentTarget.dataset.tab;this.switchTab(t)})}),this.container.querySelectorAll(`.view-bmd-btn`).forEach(e=>{e.addEventListener(`click`,e=>{let t=parseInt(e.currentTarget.dataset.id,10);this.onViewDiagram&&this.onViewDiagram(t)})}),this.container.querySelectorAll(`.matrix-format-btn`).forEach(e=>{e.addEventListener(`click`,e=>{this.matrixFormat=e.currentTarget.dataset.format,this.render()})}),this.container.querySelectorAll(`.matrix-view-btn`).forEach(e=>{e.addEventListener(`click`,e=>{this.matrixViewMode=e.currentTarget.dataset.mode,this.render()})}),this.container.querySelector(`#copy-matrix-btn`)?.addEventListener(`click`,()=>{this.copyCurrentMatrix()}),this.container.querySelector(`#download-matrix-btn`)?.addEventListener(`click`,()=>{this.downloadCurrentMatrix()})}renderTabContent(){let{summary:e,equilibrium:t,nodeDisplacements:n,memberForces:r,supportReactions:i,K_global:a,totalDof:o,freeDofsCount:s}=this.results;switch(this.activeResultsTab){case`summary`:return`
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-2 border border-[#E4DED2] bg-white rounded-lg p-3.5 shadow-sm">
+              <h4 class="text-xs font-bold text-[#191c19] uppercase tracking-wider font-sans">Solver Statistics</h4>
+              <div class="flex justify-between py-1 border-b border-[#E4DED2]/60 text-[#757168]">
+                <span>Total Degrees of Freedom:</span>
+                <span class="text-[#191c19] font-bold">${o}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-[#E4DED2]/60 text-[#757168]">
+                <span>Free (Unconstrained) DOFs:</span>
+                <span class="text-[#191c19] font-bold">${s}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-[#E4DED2]/60 text-[#757168]">
+                <span>Constrained (Supported) DOFs:</span>
+                <span class="text-[#191c19] font-bold">${o-s}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-[#E4DED2]/60 text-[#757168]">
+                <span>Total Active Members:</span>
+                <span class="text-[#191c19] font-bold">${this.model.members.length}</span>
+              </div>
+            </div>
+
+            <div class="space-y-2 border border-[#E4DED2] bg-white rounded-lg p-3.5 shadow-sm">
+              <h4 class="text-xs font-bold text-[#191c19] uppercase tracking-wider font-sans">Global Equilibrium Verification</h4>
+              <div class="flex justify-between py-1 border-b border-[#E4DED2]/60 text-[#757168]">
+                <span>Applied Vertical Load (ΣFz):</span>
+                <span class="text-[#191c19] font-medium">${t.totalAppliedFz.toFixed(4)} kN</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-[#E4DED2]/60 text-[#757168]">
+                <span>Total Support Reactions (ΣRz):</span>
+                <span class="text-[#F95C4B] font-bold">${t.sumRz.toFixed(4)} kN</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-[#E4DED2]/60 text-[#757168]">
+                <span>Vertical Net Imbalance:</span>
+                <span class="text-[#191c19]">${t.verticalImbalance.toExponential(4)} kN</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-[#E4DED2]/60 text-[#757168]">
+                <span>Global Moment Balance:</span>
+                <span class="text-[#191c19]">ΣMrx = ${t.sumMrx.toFixed(2)} kNm, ΣMry = ${t.sumMry.toFixed(2)} kNm</span>
+              </div>
+            </div>
+          </div>
+        `;case`displacements`:return`
+          <div class="border border-[#E4DED2] rounded-lg bg-white shadow-sm overflow-hidden">
+            <table class="w-full text-left">
+              <thead class="bg-[#FAF8F5] text-[#191c19] uppercase text-[10px] sticky top-0 border-b border-[#E4DED2] font-bold">
+                <tr>
+                  <th class="p-2">Node ID</th>
+                  <th class="p-2">w (Deflection, mm)</th>
+                  <th class="p-2">θx (Rotation, mrad)</th>
+                  <th class="p-2">θy (Rotation, mrad)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#E4DED2]/60 font-mono bg-white">
+                ${Object.values(n).map(e=>`
+                  <tr class="hover:bg-[#FAF8F5] transition-colors">
+                    <td class="p-1.5 pl-2 text-[#F95C4B] font-bold">Node ${e.nodeId}</td>
+                    <td class="p-1.5 ${e.w*1e3<0?`text-[#F95C4B] font-semibold`:`text-[#191c19]`}">${(e.w*1e3).toFixed(4)}</td>
+                    <td class="p-1.5 text-[#191c19]">${(e.rx*1e3).toFixed(4)}</td>
+                    <td class="p-1.5 text-[#191c19]">${(e.ry*1e3).toFixed(4)}</td>
+                  </tr>
+                `).join(``)}
+              </tbody>
+            </table>
+          </div>
+        `;case`forces`:return`
+          <div class="border border-[#E4DED2] rounded-lg bg-white shadow-sm overflow-hidden">
+            <table class="w-full text-left">
+              <thead class="bg-[#FAF8F5] text-[#191c19] uppercase text-[10px] sticky top-0 border-b border-[#E4DED2] font-bold">
+                <tr>
+                  <th class="p-2">Member</th>
+                  <th class="p-2">Shear Vi (kN)</th>
+                  <th class="p-2">Moment Mi (kNm)</th>
+                  <th class="p-2">Torsion Ti (kNm)</th>
+                  <th class="p-2">Shear Vj (kN)</th>
+                  <th class="p-2">Moment Mj (kNm)</th>
+                  <th class="p-2">Torsion Tj (kNm)</th>
+                  <th class="p-2 text-center">Diagram</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#E4DED2]/60 font-mono bg-white">
+                ${Object.values(r).map(e=>`
+                  <tr class="hover:bg-[#FAF8F5] transition-colors">
+                    <td class="p-1.5 pl-2 text-[#F95C4B] font-bold">Member ${e.memberId}</td>
+                    <td class="p-1.5 text-[#191c19]">${e.start.V.toFixed(2)}</td>
+                    <td class="p-1.5 text-[#F95C4B] font-semibold">${e.start.M.toFixed(2)}</td>
+                    <td class="p-1.5 text-[#757168]">${e.start.T.toFixed(2)}</td>
+                    <td class="p-1.5 text-[#191c19]">${e.end.V.toFixed(2)}</td>
+                    <td class="p-1.5 text-[#F95C4B] font-semibold">${e.end.M.toFixed(2)}</td>
+                    <td class="p-1.5 text-[#757168]">${e.end.T.toFixed(2)}</td>
+                    <td class="p-1.5 text-center">
+                      <button class="view-bmd-btn px-2.5 py-0.5 bg-[#F95C4B] hover:bg-[#e04635] text-white rounded text-[10px] font-bold transition shadow-sm cursor-pointer" data-id="${e.memberId}">
+                        BMD/SFD
+                      </button>
+                    </td>
+                  </tr>
+                `).join(``)}
+              </tbody>
+            </table>
+          </div>
+        `;case`reactions`:return`
+          <div class="border border-[#E4DED2] rounded-lg bg-white shadow-sm overflow-hidden">
+            <table class="w-full text-left">
+              <thead class="bg-[#FAF8F5] text-[#191c19] uppercase text-[10px] sticky top-0 border-b border-[#E4DED2] font-bold">
+                <tr>
+                  <th class="p-2">Supported Node</th>
+                  <th class="p-2">Vertical Reaction Rz (kN)</th>
+                  <th class="p-2">Reaction Moment Mrx (kNm)</th>
+                  <th class="p-2">Reaction Moment Mry (kNm)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#E4DED2]/60 font-mono bg-white">
+                ${Object.values(i).map(e=>`
+                  <tr class="hover:bg-[#FAF8F5] transition-colors">
+                    <td class="p-1.5 pl-2 text-[#F95C4B] font-bold">Node ${e.nodeId}</td>
+                    <td class="p-1.5 text-[#191c19] font-bold">${e.Rz.toFixed(3)}</td>
+                    <td class="p-1.5 text-[#757168]">${e.Mrx.toFixed(3)}</td>
+                    <td class="p-1.5 text-[#757168]">${e.Mry.toFixed(3)}</td>
+                  </tr>
+                `).join(``)}
+              </tbody>
+            </table>
+          </div>
+        `;case`matrix`:return this.renderStiffnessMatrix()}}getMatrixData(){let{K_global:e}=this.results,t=this.model?.nodes||[],n=this.model?.supports||[],r=new Map;n.forEach(e=>r.set(e.nodeId,e));let i=e.length,a=[];for(let e=0;e<i;e++){let n=Math.floor(e/3),i=e%3,o=t[n],s=o?o.id:n+1,c=i===0?`w`:i===1?`θx`:`θy`,l=i===0?`Vertical Deflection (w)`:i===1?`Torsional/Bend Rotation (θx)`:`Bending Rotation (θy)`,u=i===0?`kN/m`:`kNm/rad`,d=r.get(s),f=!!(d&&(i===0&&d.fixW||i===1&&d.fixRx||i===2&&d.fixRy));a.push({index:e,nodeId:s,compName:c,compTitle:l,unit:u,isFixed:f,label:`d${e+1}`,desc:`N${s}·${c}`})}let o=a;this.matrixViewMode===`free`&&(o=a.filter(e=>!e.isFixed));let s=o.length,c=[];for(let t=0;t<s;t++){let n=[],r=o[t].index;for(let t=0;t<s;t++){let i=o[t].index;n.push(e[r][i])}c.push(n)}let l=!0;for(let e=0;e<s;e++){for(let t=e+1;t<s;t++)if(Math.abs(c[e][t]-c[t][e])>1e-4){l=!1;break}if(!l)break}return{allDofs:a,activeDofs:o,matrix:c,isSymmetric:l,totalDof:i}}formatMatrixValue(e,t){return Math.abs(e)<1e-6?`<span class="text-[#a8a39a]">0</span>`:t===`scientific`||Math.abs(e)>=1e6||Math.abs(e)<.01&&e!==0?e.toExponential(2):Number.isInteger(e)?e.toLocaleString(`en-US`):e.toLocaleString(`en-US`,{minimumFractionDigits:1,maximumFractionDigits:2})}copyCurrentMatrix(){let{activeDofs:e,matrix:t}=this.getMatrixData(),n=`DOF	`+e.map(e=>`${e.label} [${e.desc}]`).join(`	`)+`
+`;t.forEach((t,r)=>{n+=`${e[r].label} [${e[r].desc}]\t`+t.map(e=>Math.abs(e)<1e-6?0:e).join(`	`)+`
+`}),navigator.clipboard.writeText(n).then(()=>{alert(`Global Stiffness Matrix copied to clipboard (TSV format)! You can paste directly into Excel or Google Sheets.`)}).catch(e=>{console.error(e)})}downloadCurrentMatrix(){let{activeDofs:e,matrix:t}=this.getMatrixData(),n=`DOF,`+e.map(e=>`"${e.label} (${e.desc})"`).join(`,`)+`
+`;t.forEach((t,r)=>{n+=`"${e[r].label} (${e[r].desc})",`+t.map(e=>Math.abs(e)<1e-6?0:e).join(`,`)+`
+`});let r=new Blob([n],{type:`text/csv;charset=utf-8;`}),i=URL.createObjectURL(r),a=document.createElement(`a`);a.href=i,a.download=`stiffness_matrix_${e.length}x${e.length}.csv`,document.body.appendChild(a),a.click(),document.body.removeChild(a),URL.revokeObjectURL(i)}renderStiffnessMatrix(){let{allDofs:e,activeDofs:t,matrix:n,isSymmetric:r,totalDof:i}=this.getMatrixData(),a=t.length;return`
+      <div class="space-y-3">
+        <!-- Matrix Toolbar: Info, Modes, Number Formats, Exports -->
+        <div class="flex flex-wrap items-center justify-between gap-2.5 bg-white border border-[#E4DED2] p-2.5 rounded-lg shadow-sm">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-[#191c19] flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#F95C4B]"></span>
+              ${this.matrixViewMode===`free`?`Reduced Free Stiffness Matrix [K_ff]`:`Assembled Global Stiffness Matrix [K]`}
+            </span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FAF8F5] border border-[#E4DED2] text-[#191c19] font-bold">
+              ${a} × ${a} (${i} Total DOFs)
+            </span>
+            ${r?`
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/30 font-semibold" title="K_ij = K_ji verified by Betti-Maxwell reciprocal theorem">
+                ✓ Symmetric [K]=[K]ᵀ
+              </span>
+            `:``}
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- View Mode Switcher: All DOFs vs Free DOFs -->
+            <div class="inline-flex rounded-lg border border-[#E4DED2] p-0.5 bg-[#FAF8F5]">
+              <button class="matrix-view-btn px-2.5 py-1 text-[11px] font-mono rounded font-medium transition cursor-pointer ${this.matrixViewMode===`all`?`bg-[#191c19] text-white shadow-sm`:`text-[#757168] hover:text-[#191c19]`}" data-mode="all" title="Show all degrees of freedom including restrained supports">
+                All DOFs (${i})
+              </button>
+              <button class="matrix-view-btn px-2.5 py-1 text-[11px] font-mono rounded font-medium transition cursor-pointer ${this.matrixViewMode===`free`?`bg-[#191c19] text-white shadow-sm`:`text-[#757168] hover:text-[#191c19]`}" data-mode="free" title="Show only unconstrained degrees of freedom solved in [K_ff]{d_f} = {F_f}">
+                Free DOFs [K_ff]
+              </button>
+            </div>
+
+            <!-- Number Format Switcher: Decimal vs Scientific -->
+            <div class="inline-flex rounded-lg border border-[#E4DED2] p-0.5 bg-[#FAF8F5]">
+              <button class="matrix-format-btn px-2.5 py-1 text-[11px] font-mono rounded font-medium transition cursor-pointer ${this.matrixFormat===`decimal`?`bg-[#F95C4B] text-white shadow-sm font-bold`:`text-[#757168] hover:text-[#191c19]`}" data-format="decimal" title="Display values as standard clean numbers (e.g. 1,125.0)">
+                1,234.5
+              </button>
+              <button class="matrix-format-btn px-2.5 py-1 text-[11px] font-mono rounded font-medium transition cursor-pointer ${this.matrixFormat===`scientific`?`bg-[#F95C4B] text-white shadow-sm font-bold`:`text-[#757168] hover:text-[#191c19]`}" data-format="scientific" title="Display values in scientific exponential notation (e.g. 1.13e+3)">
+                1.23e+3
+              </button>
+            </div>
+
+            <!-- Export Buttons -->
+            <button id="copy-matrix-btn" class="px-2.5 py-1 bg-white hover:bg-[#FAF8F5] text-[#191c19] border border-[#E4DED2] rounded-lg text-[11px] font-mono font-medium transition shadow-sm cursor-pointer flex items-center gap-1" title="Copy matrix to clipboard (tab-separated for Excel & Sheets)">
+              <span>📋 Copy</span>
+            </button>
+            <button id="download-matrix-btn" class="px-2.5 py-1 bg-white hover:bg-[#FAF8F5] text-[#191c19] border border-[#E4DED2] rounded-lg text-[11px] font-mono font-medium transition shadow-sm cursor-pointer flex items-center gap-1" title="Download matrix as CSV file">
+              <span>⬇ CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Full Matrix Grid Container with Sticky Headers & High-Contrast Diagonal -->
+        <div class="relative border-2 border-[#E4DED2] rounded-xl bg-white shadow-md overflow-hidden">
+          <div class="overflow-auto max-h-[380px] w-full">
+            <table class="border-collapse text-[11px] font-mono w-full min-w-max">
+              <thead>
+                <tr class="bg-[#FAF8F5]">
+                  <th class="sticky top-0 left-0 z-30 bg-[#FAF8F5] border-b-2 border-r-2 border-[#E4DED2] p-2 text-left font-bold text-[#191c19] min-w-[95px] shadow-sm">
+                    DOF \\ Col
+                  </th>
+                  ${t.map((e,t)=>`
+                    <th class="sticky top-0 z-20 bg-[#FAF8F5] border-b-2 border-r border-[#E4DED2] p-2 text-center font-bold text-[#191c19] min-w-[96px] shadow-sm" title="${e.compTitle} at Node ${e.nodeId}">
+                      <div class="text-[#F95C4B]">${e.label}</div>
+                      <div class="text-[9px] text-[#757168] font-medium">${e.desc}</div>
+                      ${e.isFixed?`<span class="text-[8px] px-1 py-0.2 rounded bg-amber-500/10 text-amber-800 border border-amber-500/30">FIXED</span>`:``}
+                    </th>
+                  `).join(``)}
+                </tr>
+              </thead>
+              <tbody>
+                ${n.map((e,n)=>{let r=t[n];return`
+                    <tr class="hover:bg-[#FAF8F5]/80 transition-colors">
+                      <td class="sticky left-0 z-10 bg-white border-b border-r-2 border-[#E4DED2] px-2.5 py-1.5 font-bold text-[#191c19] shadow-sm" title="${r.compTitle} at Node ${r.nodeId}">
+                        <div class="flex items-center justify-between gap-1.5">
+                          <span class="text-[#F95C4B]">${r.label}</span>
+                          <span class="text-[9px] text-[#757168] font-normal">${r.desc}</span>
+                        </div>
+                      </td>
+                      ${e.map((e,i)=>{let a=n===i,o=Math.abs(e)<1e-6,s=this.formatMatrixValue(e,this.matrixFormat);return`
+                          <td class="border-b border-r border-[#E4DED2]/60 px-3 py-1.5 text-right transition-colors ${a?`bg-[#F95C4B]/10 font-bold text-[#F95C4B] border-l border-r border-[#F95C4B]/30`:o?`text-[#a8a39a]`:`text-[#191c19] font-medium`}" title="K[${r.label}, ${t[i].label}] = ${e.toFixed(4)}">
+                            ${s}
+                          </td>
+                        `}).join(``)}
+                    </tr>
+                  `}).join(``)}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Matrix Equation Context & Legend Footer -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-[11px] font-mono text-[#757168] bg-white p-3 rounded-lg border border-[#E4DED2] shadow-sm">
+          <div class="flex items-center gap-2">
+            <span class="w-3.5 h-3.5 rounded bg-[#F95C4B]/20 border border-[#F95C4B] shrink-0"></span>
+            <span><strong>Diagonal Elements (K_ii):</strong> Direct driving-point stiffness (positive definite).</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3.5 h-3.5 rounded bg-amber-500/20 border border-amber-500 shrink-0"></span>
+            <span><strong>Fixed DOFs:</strong> Boundary conditions eliminated during reduction.</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-[#191c19]">[K]{d} = {F}</span>
+            <span>Direct Stiffness Matrix solved via Cholesky decomposition.</span>
+          </div>
+        </div>
+      </div>
+    `}};
+    const Ku=class{constructor(){this.modalEl=null,this.canvas=null,this.ctx=null,this.activeMember=null,this.results=null,this.model=null,this.hoverFrac=.5,this.createModalDOM()}createModalDOM(){let e=document.getElementById(`diagram-modal`);e||(e=document.createElement(`div`),e.id=`diagram-modal`,e.className=`fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm hidden`,e.innerHTML=`
+        <div class="bg-[#F6F4F1] border border-[#E4DED2] rounded-xl shadow-2xl w-11/12 max-w-4xl p-5 text-[#191c19]">
+          <div class="flex items-center justify-between pb-3 border-b border-[#E4DED2]">
+            <div>
+              <h3 id="modal-title" class="text-base font-bold text-[#191c19] font-sans flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#F95C4B]"></span>
+                Member Internal Diagrams (BMD / SFD)
+              </h3>
+              <p id="modal-subtitle" class="text-xs text-[#757168] font-mono mt-0.5"></p>
+            </div>
+            <button id="modal-close-btn" class="p-1.5 rounded-md text-[#757168] hover:text-[#191c19] hover:bg-[#E4DED2]/60 transition cursor-pointer">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Canvas Container (Black Canvas background for clear contrast) -->
+          <div class="my-4 bg-black border border-[#333333] rounded-lg p-3 relative shadow-inner">
+            <canvas id="diagram-canvas" width="850" height="380" class="w-full h-auto cursor-crosshair"></canvas>
+            <div id="canvas-hud" class="absolute top-4 right-4 bg-black/90 border border-[#E4DED2]/30 rounded px-3 py-1.5 text-xs font-mono shadow-md text-[#E4DED2]">
+              Hover along span to inspect values
+            </div>
+          </div>
+
+          <!-- Footer / Stats -->
+          <div id="modal-stats" class="grid grid-cols-4 gap-3 text-xs font-mono bg-white p-3 rounded-lg border border-[#E4DED2] text-[#191c19] shadow-sm">
+          </div>
+        </div>
+      `,document.body.appendChild(e)),this.modalEl=e,this.canvas=e.querySelector(`#diagram-canvas`),this.ctx=this.canvas.getContext(`2d`),e.querySelector(`#modal-close-btn`).addEventListener(`click`,()=>this.hide()),e.addEventListener(`click`,t=>{t.target===e&&this.hide()}),this.canvas.addEventListener(`mousemove`,e=>{let t=this.canvas.getBoundingClientRect(),n=e.clientX-t.left,r=Math.max(0,Math.min(1,(n-70)/(t.width-140)));this.hoverFrac=r,this.draw()})}show(e,t,n){if(this.model=t,this.results=n,this.activeMember=t.members.find(t=>t.id===e),!this.activeMember||!n)return;this.modalEl.classList.remove(`hidden`);let r=t.nodes.find(e=>e.id===this.activeMember.startNodeId),i=t.nodes.find(e=>e.id===this.activeMember.endNodeId),a=Math.hypot(i.x-r.x,i.y-r.y);this.modalEl.querySelector(`#modal-title`).innerText=`Member ${this.activeMember.id}: Internal Force Diagrams`,this.modalEl.querySelector(`#modal-subtitle`).innerText=`Connectivity: Node ${r.id} → Node ${i.id} | Length L = ${a.toFixed(3)} m | Section: ${this.activeMember.width||300}x${this.activeMember.depth||600} mm`,this.draw()}hide(){this.modalEl.classList.add(`hidden`)}draw(){if(!this.ctx||!this.activeMember||!this.results)return;let e=this.ctx,t=this.canvas.width,n=this.canvas.height;e.clearRect(0,0,t,n);let r=this.results.memberForces[this.activeMember.id];if(!r)return;let i=this.model.nodes.find(e=>e.id===this.activeMember.startNodeId),a=this.model.nodes.find(e=>e.id===this.activeMember.endNodeId),o=Math.hypot(a.x-i.x,a.y-i.y),s={L:o,localDisplacements:r.localDisplacements,localForces:r.localForces,udl:r.udl||0},c=t-80,l=c-80,u=[],d=0,f=0;for(let e=0;e<=50;e++){let t=e/50*o,n=Bu.evaluateAt(s,t);u.push(n),Math.abs(n.M)>d&&(d=Math.abs(n.M)),Math.abs(n.V)>f&&(f=Math.abs(n.V))}d<1e-4&&(d=1),f<1e-4&&(f=1);let p=60/d,m=60/f;e.font=`bold 12px monospace`,e.fillStyle=`#f59e0b`,e.fillText(`Bending Moment Diagram (kNm)`,80,35),e.strokeStyle=`#475569`,e.lineWidth=1.5,e.beginPath(),e.moveTo(80,110),e.lineTo(c,110),e.stroke(),e.beginPath(),e.moveTo(80,110);for(let t=0;t<=50;t++){let n=80+t/50*l,r=110-u[t].M*p;e.lineTo(n,r)}e.lineTo(c,110),e.closePath(),e.fillStyle=`rgba(245, 158, 11, 0.2)`,e.fill(),e.strokeStyle=`#f59e0b`,e.lineWidth=2,e.stroke(),e.font=`11px monospace`,e.fillStyle=`#fcd34d`,e.fillText(`M_i: ${u[0].M.toFixed(2)}`,70,110-u[0].M*p-8),e.fillText(`M_j: ${u[50].M.toFixed(2)}`,c-50,110-u[50].M*p-8),e.font=`bold 12px monospace`,e.fillStyle=`#10b981`,e.fillText(`Shear Force Diagram (kN)`,80,215),e.strokeStyle=`#475569`,e.lineWidth=1.5,e.beginPath(),e.moveTo(80,290),e.lineTo(c,290),e.stroke(),e.beginPath(),e.moveTo(80,290);for(let t=0;t<=50;t++){let n=80+t/50*l,r=290-u[t].V*m;e.lineTo(n,r)}e.lineTo(c,290),e.closePath(),e.fillStyle=`rgba(16, 185, 129, 0.2)`,e.fill(),e.strokeStyle=`#10b981`,e.lineWidth=2,e.stroke(),e.fillStyle=`#6ee7b7`,e.fillText(`V_i: ${u[0].V.toFixed(2)}`,70,290-u[0].V*m-8),e.fillText(`V_j: ${u[50].V.toFixed(2)}`,c-50,290-u[50].V*m-8);let h=80+this.hoverFrac*l,g=this.hoverFrac*o,_=Bu.evaluateAt(s,g);e.strokeStyle=`#F95C4B`,e.lineWidth=1.5,e.setLineDash([4,4]),e.beginPath(),e.moveTo(h,40),e.lineTo(h,360),e.stroke(),e.setLineDash([]);let v=this.modalEl.querySelector(`#canvas-hud`);v&&(v.innerHTML=`
+        <span class="text-[#F95C4B] font-bold">x = ${g.toFixed(2)}m (${(this.hoverFrac*100).toFixed(0)}%)</span> |
+        <span class="text-[#F6F4F1]">M = ${_.M.toFixed(2)} kNm</span> |
+        <span class="text-[#E4DED2]">V = ${_.V.toFixed(2)} kN</span> |
+        <span class="text-[#F95C4B]">w = ${(_.w*1e3).toFixed(3)} mm</span>
+      `);let y=this.modalEl.querySelector(`#modal-stats`);y&&(y.innerHTML=`
+        <div><span class="text-[#757168]">Max |M|:</span> <strong class="text-[#191c19] font-bold">${d.toFixed(2)} kNm</strong></div>
+        <div><span class="text-[#757168]">Max |V|:</span> <strong class="text-[#191c19] font-bold">${f.toFixed(2)} kN</strong></div>
+        <div><span class="text-[#757168]">Torsion:</span> <strong class="text-[#64748b] font-bold">${r.start.T.toFixed(2)} kNm</strong></div>
+        <div><span class="text-[#757168]">Deflection (Mid):</span> <strong class="text-[#F95C4B] font-bold">${(u[25].w*1e3).toFixed(3)} mm</strong></div>
+      `)}};
+    const qu=class{static exportJSON(e,t=`grillage_project`){let n={project:t,version:`1.0.0`,timestamp:new Date().toISOString(),model:e},r=JSON.stringify(n,null,2),i=new Blob([r],{type:`application/json`}),a=URL.createObjectURL(i),o=document.createElement(`a`);o.href=a,o.download=`${t.toLowerCase().replace(/\s+/g,`_`)}.json`,document.body.appendChild(o),o.click(),document.body.removeChild(o),URL.revokeObjectURL(a)}static importJSON(e,t){let n=new FileReader;n.onload=e=>{try{let n=JSON.parse(e.target.result);n&&n.model&&Array.isArray(n.model.nodes)&&Array.isArray(n.model.members)?(n.project&&!n.model.name&&(n.model.name=n.project),t(n.model)):alert(`Invalid project file format. Missing nodes or members array.`)}catch(e){alert(`Failed to parse JSON project file: ${e.message}`)}},n.readAsText(e)}static generateReport(e,t,n=`Grillage Structural Analysis`){if(!t||!t.success){alert(`Please run the structural analysis first to generate a report with results.`);return}let{summary:r,equilibrium:i,nodeDisplacements:a,memberForces:o,supportReactions:s}=t,c=`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <title>${n} - Engineering Calculation Report</title>
+        <style>
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; color: #1e293b; background: #fff; }
+          h1 { color: #000000; border-bottom: 3px solid #F95C4B; padding-bottom: 8px; margin-bottom: 4px; font-size: 24px; font-weight: 800; }
+          .meta { font-size: 12px; color: #666; margin-bottom: 24px; }
+          h2 { color: #000000; font-size: 16px; margin-top: 24px; border-bottom: 2px solid #E4DED2; padding-bottom: 4px; }
+          .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+          .kpi-box { border: 1px solid #E4DED2; border-radius: 6px; padding: 12px; background: #F6F4F1; }
+          .kpi-label { font-size: 11px; text-transform: uppercase; color: #666; font-weight: bold; }
+          .kpi-val { font-size: 20px; font-weight: bold; color: #F95C4B; margin-top: 4px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; font-family: monospace; }
+          th { background: #E4DED2; text-align: left; padding: 6px 8px; border: 1px solid #d4cdc1; font-weight: bold; color: #000000; }
+          td { padding: 6px 8px; border: 1px solid #E4DED2; }
+          tr:nth-child(even) { background: #F6F4F1; }
+          .footer { margin-top: 40px; font-size: 11px; color: #888; text-align: center; border-top: 1px solid #E4DED2; padding-top: 12px; }
+          @media print {
+            body { margin: 15mm; }
+            button { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h1>${n}</h1>
+            <div class="meta">Generated by Tanti Hit Structural FEA Engine &bull; ${new Date().toLocaleString()}</div>
+          </div>
+          <button onclick="window.print()" style="padding: 8px 16px; background: #F95C4B; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+            Print / Save as PDF
+          </button>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-box">
+            <div class="kpi-label">Max Deflection (δ_max)</div>
+            <div class="kpi-val">${(r.maxDeflection*1e3).toFixed(3)} mm</div>
+            <div style="font-size: 10px; color: #64748b;">Node ${r.maxDeflectionNodeId||`-`}</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">Max Bending Moment</div>
+            <div class="kpi-val">${r.maxBendingMoment.toFixed(2)} kNm</div>
+            <div style="font-size: 10px; color: #64748b;">Member ${r.maxBendingMomentMemberId||`-`}</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">Max Torsion</div>
+            <div class="kpi-val">${r.maxTorsionalMoment.toFixed(2)} kNm</div>
+            <div style="font-size: 10px; color: #64748b;">Member ${r.maxTorsionalMomentMemberId||`-`}</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">Static Equilibrium</div>
+            <div class="kpi-val" style="color: ${i.equilibriumPassed?`#10b981`:`#ef4444`}">
+              ${i.equilibriumPassed?`PASSED`:`CHECK`}
+            </div>
+            <div style="font-size: 10px; color: #64748b;">ΣRz = ${i.sumRz.toFixed(2)} kN</div>
+          </div>
+        </div>
+
+        <h2>1. Global Equilibrium & Boundary Reactions</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Supported Node</th>
+              <th>Vertical Reaction Rz (kN)</th>
+              <th>Reaction Moment Mrx (kNm)</th>
+              <th>Reaction Moment Mry (kNm)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${Object.values(s).map(e=>`
+              <tr>
+                <td><strong>Node ${e.nodeId}</strong></td>
+                <td><strong>${e.Rz.toFixed(3)}</strong></td>
+                <td>${e.Mrx.toFixed(3)}</td>
+                <td>${e.Mry.toFixed(3)}</td>
+              </tr>
+            `).join(``)}
+          </tbody>
+        </table>
+
+        <h2>2. Member Internal Actions (Shear, Bending, Torsion)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Member ID</th>
+              <th>Shear Vi (kN)</th>
+              <th>Moment Mi (kNm)</th>
+              <th>Torsion Ti (kNm)</th>
+              <th>Shear Vj (kN)</th>
+              <th>Moment Mj (kNm)</th>
+              <th>Torsion Tj (kNm)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${Object.values(o).map(e=>`
+              <tr>
+                <td><strong>Member ${e.memberId}</strong></td>
+                <td>${e.start.V.toFixed(2)}</td>
+                <td>${e.start.M.toFixed(2)}</td>
+                <td>${e.start.T.toFixed(2)}</td>
+                <td>${e.end.V.toFixed(2)}</td>
+                <td>${e.end.M.toFixed(2)}</td>
+                <td>${e.end.T.toFixed(2)}</td>
+              </tr>
+            `).join(``)}
+          </tbody>
+        </table>
+
+        <h2>3. Nodal Deflections & Rotations</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Node ID</th>
+              <th>Vertical Deflection w (mm)</th>
+              <th>Rotation θx (mrad)</th>
+              <th>Rotation θy (mrad)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${Object.values(a).map(e=>`
+              <tr>
+                <td><strong>Node ${e.nodeId}</strong></td>
+                <td>${(e.w*1e3).toFixed(4)}</td>
+                <td>${(e.rx*1e3).toFixed(4)}</td>
+                <td>${(e.ry*1e3).toFixed(4)}</td>
+              </tr>
+            `).join(``)}
+          </tbody>
+        </table>
+
+        <div class="footer">
+          Structural Grillage Finite Element Analysis &bull; Direct Stiffness Method (3 DOF per node) &bull; Verified Static Equilibrium
+        </div>
+      </body>
+      </html>
+    `,l=window.open(``,`_blank`);l?(l.document.write(c),l.document.close()):alert(`Pop-up blocked. Please allow pop-ups for this page to view the printable calculation report.`)}};
+
+    let currentModel = null;
+    let currentResults = null;
+    let resultsManager = null;
+    let diagramModal = null;
+
+    function loadResultsFromStorage() {
+      try {
+        const stored = localStorage.getItem('tanti_hit_fea_results');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed && parsed.results && parsed.model) {
+            currentModel = parsed.model;
+            currentResults = parsed.results;
+            updateUI();
+            return true;
+          }
+        }
+      } catch (e) {
+        console.error('Error loading stored results:', e);
+      }
+      return false;
+    }
+
+    function updateUI() {
+      if (!currentModel || !currentResults) return;
+
+      const pName = document.getElementById('results-project-name');
+      if (pName) {
+        pName.innerText = currentModel.name || 'Grillage Project';
+      }
+
+      const pBadge = document.getElementById('results-status-badge');
+      if (pBadge && currentResults) {
+        const eq = currentResults.equilibrium;
+        const passed = eq && eq.equilibriumPassed;
+        pBadge.innerText = `Solved (${currentResults.totalDof} DOFs) - Equilibrium ${passed ? 'OK' : 'Warning'}`;
+        pBadge.className = `text-xs font-mono px-2.5 py-1 rounded-lg ${passed ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-amber-950 text-amber-300 border border-amber-800'} font-bold shadow-xs`;
+      }
+
+      if (resultsManager) {
+        resultsManager.setResults(currentResults, currentModel);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('results-content-container');
+      diagramModal = new Ku();
+      resultsManager = new Gu(container, (memberId) => {
+        diagramModal.show(memberId, currentModel, currentResults);
+      });
+
+      const loaded = loadResultsFromStorage();
+      if (!loaded) {
+        container.innerHTML = `
+          <div class="p-12 text-center text-[#757168] font-mono text-sm bg-white m-auto">
+            <span class="text-4xl block mb-3">📊</span>
+            <h3 class="text-base font-bold text-[#191c19] mb-1">No Active Analysis Results</h3>
+            <p class="mb-4">Please return to the main 3D model screen and click <strong class="text-[#F95C4B]">"Run Analysis"</strong> (Ctrl+Enter).</p>
+            <button onclick="window.location.href='index.html'" class="px-4 py-2 bg-[#F95C4B] hover:bg-[#e04635] text-white font-bold rounded-lg transition shadow-xs text-xs cursor-pointer">
+              ← Return to 3D Model
+            </button>
+          </div>
+        `;
+        document.getElementById('results-project-name').innerText = 'No Model';
+        const badge = document.getElementById('results-status-badge');
+        badge.innerText = 'Unsolved';
+        badge.className = 'text-xs font-mono px-2.5 py-1 rounded-lg bg-amber-950 text-amber-300 border border-amber-800 font-bold shadow-xs';
+      }
+
+      // Actions
+      document.getElementById('refresh-results-btn')?.addEventListener('click', () => {
+        if (loadResultsFromStorage()) {
+          console.log('Results reloaded from storage');
+        } else {
+          alert('No updated results found in storage. Please solve the model on the main screen.');
+        }
+      });
+
+      document.getElementById('export-report-btn')?.addEventListener('click', () => {
+        if (!currentResults) {
+          alert('Please run analysis first.');
+          return;
+        }
+        qu.generateReport(currentModel, currentResults, currentModel.name || 'Grillage Structural Analysis');
+      });
+
+      document.getElementById('export-json-btn')?.addEventListener('click', () => {
+        if (!currentModel) return;
+        qu.exportJSON(currentModel, currentModel.name || 'Grillage_Model');
+      });
+
+      document.getElementById('back-to-model-btn')?.addEventListener('click', () => {
+        if (window.opener) {
+          window.close();
+        } else {
+          window.location.href = 'index.html';
+        }
+      });
+
+      // Storage event listener for live sync
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'tanti_hit_fea_results') {
+          loadResultsFromStorage();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
